@@ -7,7 +7,7 @@
             <div class="card shadow-lg border-0 glass-card" style="border-radius: 30px !important;">
                 <div class="card-body p-4 p-md-5">
                     <div class="text-center mb-5">
-                        <span style="font-size: 4rem;">💭</span>
+                        <span style="font-size: 4rem;" aria-hidden="true">💭</span>
                         <h2 class="fw-bold text-dark mt-2">How are you feeling today?</h2>
                         <p class="text-muted">Take a deep breath and check in with yourself.</p>
                     </div>
@@ -15,8 +15,8 @@
                     <form th:action="@{/checkin}" th:object="${moodEntryDto}" method="post">
                         
                         <!-- Mood Selection -->
-                        <div class="mb-5 p-4 rounded-4" style="background: rgba(255,255,255,0.4);">
-                            <label class="form-label fs-5 fw-bold text-dark mb-3">1. Select your mood</label>
+                        <fieldset class="mb-5 p-4 rounded-4" style="background: rgba(255,255,255,0.4);">
+                            <legend class="form-label fs-5 fw-bold text-dark mb-3 w-auto">1. Select your mood</legend>
                             <div class="d-flex flex-wrap gap-2 justify-content-center">
                                 <th:block th:each="mood : ${moods}">
                                     <input type="radio" class="btn-check" th:id="${mood}" th:value="${mood}" th:field="*{mood}">
@@ -24,11 +24,11 @@
                                 </th:block>
                             </div>
                             <div class="text-danger fw-bold text-center mt-2" th:if="${#fields.hasErrors('mood')}" th:errors="*{mood}"></div>
-                        </div>
+                        </fieldset>
 
                         <!-- Triggers -->
-                        <div class="mb-5 p-4 rounded-4" style="background: rgba(255,255,255,0.4);">
-                            <label class="form-label fs-5 fw-bold text-dark mb-3">2. What's weighing on your mind? <span class="text-muted fs-6 fw-normal">(Select all that apply)</span></label>
+                        <fieldset class="mb-5 p-4 rounded-4" style="background: rgba(255,255,255,0.4);">
+                            <legend class="form-label fs-5 fw-bold text-dark mb-3 w-auto">2. What's weighing on your mind? <span class="text-muted fs-6 fw-normal">(Select all that apply)</span></legend>
                             <div class="d-flex flex-wrap gap-3">
                                 <th:block th:each="trigger : ${triggers}">
                                     <div class="form-check border-0 shadow-sm p-3 rounded-4 flex-grow-1" style="background: white;">
@@ -37,7 +37,7 @@
                                     </div>
                                 </th:block>
                             </div>
-                        </div>
+                        </fieldset>
 
                         <!-- Reflection -->
                         <div class="row g-4 mb-4">
@@ -52,7 +52,7 @@
                         </div>
 
                         <div class="d-grid mt-5">
-                            <button type="submit" class="btn btn-primary btn-lg shadow-lg py-3 fs-5" style="border-radius: 20px;">Save Check-in & Get Support 🌟</button>
+                            <button type="submit" class="btn btn-primary btn-lg shadow-lg py-3 fs-5" style="border-radius: 20px;">Save Check-in & Get Support <span aria-hidden="true">🌟</span></button>
                         </div>
                     </form>
                 </div>

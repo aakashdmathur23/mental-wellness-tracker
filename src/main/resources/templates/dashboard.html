@@ -4,7 +4,7 @@
 <div class="content">
     <div class="row mb-5 align-items-center">
         <div class="col-md-8">
-            <h1 class="fw-bold text-dark" style="font-size: 3rem;">Welcome Back, <span th:text="${profile != null ? profile.name : 'Student'}"></span>! ☀️</h1>
+            <h1 class="fw-bold text-dark" style="font-size: 3rem;">Welcome Back, <span th:text="${profile != null ? profile.name : 'Student'}"></span>! <span aria-hidden="true">☀️</span></h1>
             <p class="text-muted fs-5">Tracking your wellness through your <span class="fw-bold text-primary" th:text="${profile != null ? profile.examType : 'Exam'}"></span> journey.</p>
         </div>
         <div class="col-md-4 text-end">
@@ -12,8 +12,8 @@
                 <div class="card-body p-4">
                     <h5 class="card-title fw-bold mb-1 opacity-75">Consistency Streak</h5>
                     <div class="d-flex align-items-center justify-content-end">
-                        <h1 class="display-3 fw-bold mb-0 me-2" th:text="${streak}">0</h1>
-                        <span style="font-size: 3rem;">🔥</span>
+                        <h2 class="display-3 fw-bold mb-0 me-2" th:text="${streak}">0</h2>
+                        <span style="font-size: 3rem;" aria-hidden="true">🔥</span>
                     </div>
                 </div>
             </div>
@@ -32,12 +32,12 @@
                             <circle cx="60" cy="60" r="54" fill="none" stroke="#764ba2" stroke-width="12" stroke-dasharray="339.292" th:attr="stroke-dashoffset=${339.292 - (339.292 * wellnessScore / 100)}" stroke-linecap="round" transform="rotate(-90 60 60)" />
                         </svg>
                         <div class="position-absolute top-50 start-50 translate-middle">
-                            <h2 class="fw-bold mb-0 text-dark" th:text="${wellnessScore}">0</h2>
+                            <span class="fs-2 fw-bold mb-0 text-dark" th:text="${wellnessScore}">0</span>
                         </div>
                     </div>
-                    <p class="mt-3 mb-0 text-muted" th:if="${wellnessScore >= 70}">You're doing great! Keep it up. 🌟</p>
-                    <p class="mt-3 mb-0 text-muted" th:if="${wellnessScore >= 40 and wellnessScore < 70}">You're hanging in there. Take a break! ☕</p>
-                    <p class="mt-3 mb-0 text-muted" th:if="${wellnessScore < 40}">Be gentle with yourself today. 🫂</p>
+                    <p class="mt-3 mb-0 text-muted" th:if="${wellnessScore >= 70}">You're doing great! Keep it up. <span aria-hidden="true">🌟</span></p>
+                    <p class="mt-3 mb-0 text-muted" th:if="${wellnessScore >= 40 and wellnessScore < 70}">You're hanging in there. Take a break! <span aria-hidden="true">☕</span></p>
+                    <p class="mt-3 mb-0 text-muted" th:if="${wellnessScore < 40}">Be gentle with yourself today. <span aria-hidden="true">🫂</span></p>
                 </div>
             </div>
         </div>
@@ -47,7 +47,7 @@
                 <div class="card-body p-4">
                     <h5 class="fw-bold text-muted mb-3 text-uppercase" style="font-size: 0.8rem;">Your Top Stress Triggers</h5>
                     <div th:if="${#lists.isEmpty(topTriggers)}" class="text-center p-4">
-                        <span style="font-size: 2rem;">🌿</span>
+                        <span style="font-size: 2rem;" aria-hidden="true">🌿</span>
                         <p class="text-muted mt-2">No triggers identified yet. Keep logging your check-ins!</p>
                     </div>
                     <div th:if="${not #lists.isEmpty(topTriggers)}" class="d-flex flex-column gap-3 mt-4">
@@ -70,7 +70,7 @@
     <div class="row mb-5">
         <div class="col-12">
             <a href="/checkin" class="btn btn-primary btn-lg w-100 shadow py-3 fs-4" style="border-radius: 20px;">
-                ✨ Log Today's Mood ✨
+                <span aria-hidden="true">✨</span> Log Today's Mood <span aria-hidden="true">✨</span>
             </a>
         </div>
     </div>
@@ -80,15 +80,31 @@
         <div class="col-md-5 mb-4">
             <div class="card shadow-sm border-0 glass-card sticky-top" style="top: 100px; border-radius: 25px;">
                 <div class="card-body p-4">
-                    <h4 class="fw-bold mb-4">Mood Trend 📈</h4>
+                    <h2 class="h4 fw-bold mb-4">Mood Trend <span aria-hidden="true">📈</span></h2>
                     
                     <div th:if="${entries.size() < 3}" class="text-center p-5 rounded-4" style="background: rgba(255,255,255,0.4);">
-                        <span style="font-size: 3rem;">🌱</span>
+                        <span style="font-size: 3rem;" aria-hidden="true">🌱</span>
                         <p class="text-muted mt-3 fw-bold">Keep checking in! Your wellness trend will blossom after 3 entries.</p>
                     </div>
                     
                     <div th:if="${entries.size() >= 3}">
-                        <canvas id="moodChart" height="250"></canvas>
+                        <canvas id="moodChart" height="250" role="img" aria-label="Line chart showing your wellness score trend over recent check-ins"></canvas>
+                        <!-- Fallback for screen readers -->
+                        <table class="visually-hidden">
+                            <caption>Wellness Score Trend</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Mood</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="entry : ${entries}">
+                                    <td th:text="${#temporals.format(entry.timestamp, 'dd MMM yyyy')}"></td>
+                                    <td th:text="${entry.mood}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -96,7 +112,7 @@
 
         <!-- Recent Entries & Suggestions -->
         <div class="col-md-7">
-            <h3 class="fw-bold mb-4">Your Journey</h3>
+            <h2 class="h3 fw-bold mb-4">Your Journey</h2>
             <div class="card mb-4 shadow-sm border-0 glass-card" th:each="entry : ${entries}" style="border-radius: 25px;">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -120,8 +136,8 @@
 
                     <div class="p-4 rounded-4 text-dark border-start border-4 shadow-sm" style="background: rgba(255,255,255,0.8); border-color: #764ba2 !important;">
                         <div class="d-flex align-items-center mb-2">
-                            <span class="fs-4 me-2">💡</span>
-                            <small class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem;">Wellness Suggestion</small>
+                            <span class="fs-4 me-2" aria-hidden="true">💡</span>
+                            <strong class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem;">Wellness Suggestion</strong>
                         </div>
                         <span class="fs-6 fw-semibold" th:text="${entry.wellnessSuggestion}"></span>
                     </div>
@@ -132,7 +148,7 @@
     
     <div class="row" th:if="${#lists.isEmpty(entries)}">
         <div class="col-12 text-center p-5 glass-card shadow-sm" style="border-radius: 30px;">
-            <span style="font-size: 5rem;">🧘🏽‍♀️</span>
+            <span style="font-size: 5rem;" aria-hidden="true">🧘🏽‍♀️</span>
             <h2 class="fw-bold mt-3 text-dark">Your wellness journey begins here.</h2>
             <p class="text-muted fs-5">Take a moment to breathe and reflect on your day.</p>
         </div>

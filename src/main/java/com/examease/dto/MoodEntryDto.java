@@ -3,6 +3,7 @@ package com.examease.dto;
 import com.examease.model.Mood;
 import com.examease.model.StressTrigger;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public class MoodEntryDto {
@@ -11,7 +12,10 @@ public class MoodEntryDto {
 
     private List<StressTrigger> triggers;
     
+    @Size(max = 500, message = "Bothersome note must be under 500 characters")
     private String bothersomeNote;
+
+    @Size(max = 500, message = "Helpful note must be under 500 characters")
     private String helpfulNote;
 
     public Mood getMood() { return mood; }

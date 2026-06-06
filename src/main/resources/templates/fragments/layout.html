@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,10 +11,10 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+<nav class="navbar navbar-expand-lg sticky-top shadow-sm" aria-label="Main Navigation">
     <div class="container">
         <a class="navbar-brand fs-4" href="/">✨ ExamEase</a>
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -26,21 +26,21 @@
                     <a class="nav-link px-3" href="/checkin">Check-in</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link px-3 text-danger fw-bold" href="/support">Support ❤️</a>
+                    <a class="nav-link px-3 text-danger fw-bold" href="/support">Support <span aria-hidden="true">❤️</span></a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
 
-<div class="container mt-4 mb-5" style="max-width: 1000px;">
+<main class="container mt-4 mb-5" style="max-width: 1000px;">
     <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert" style="border-radius: 15px; background: rgba(132, 250, 176, 0.8); color: #1a5c38; backdrop-filter: blur(10px);">
         <strong th:text="${successMessage}"></strong>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     
     <div th:replace="${content}"></div>
-</div>
+</main>
 
 <footer class="text-center py-4 mt-auto">
     <div class="container">

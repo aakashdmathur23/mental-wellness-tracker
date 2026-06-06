@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class StudentProfile {
@@ -11,7 +13,12 @@ public class StudentProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotBlank(message = "Name cannot be empty")
+    @Size(max = 50, message = "Name must be under 50 characters")
     private String name;
+
+    @NotBlank(message = "Exam type cannot be empty")
+    @Size(max = 50, message = "Exam type must be under 50 characters")
     private String examType;
 
     public StudentProfile() {

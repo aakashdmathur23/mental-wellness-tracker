@@ -55,7 +55,8 @@ public class WellnessService {
     
     // FR-10: Consistency/Streak Tracking
     public int calculateStreak() {
-        List<MoodEntry> entries = repository.findAllByOrderByTimestampDesc();
+        // Fetch only last 60 days to be efficient instead of whole DB
+        List<MoodEntry> entries = repository.findAllByTimestampAfterOrderByTimestampDesc(LocalDateTime.now().minusDays(60));
         if (entries.isEmpty()) return 0;
 
         int streak = 0;
@@ -81,7 +82,7 @@ public class WellnessService {
 
     // FR-9: Wellness Score Generation
     public int calculateWellnessScore() {
-        List<MoodEntry> recentEntries = getAllEntries(); // In a real app, limit to last 7 days
+        List<MoodEntry> recentEntries = repository.findTop7ByOrderByTimestampDesc();
         if (recentEntries.isEmpty()) return 0;
 
         double totalScore = 0;
@@ -108,7 +109,8 @@ public class WellnessService {
 
     // FR-7: Stress Trigger Analytics
     public List<Map.Entry<String, Long>> getTopTriggers() {
-        List<MoodEntry> entries = getAllEntries();
+        // Look at last 30 days for top triggers to be relevant and efficient
+        List<MoodEntry> entries = repository.findAllByTimestampAfterOrderByTimestampDesc(LocalDateTime.now().minusDays(30));
         return entries.stream()
                 .filter(e -> e.getTriggers() != null)
                 .flatMap(e -> e.getTriggers().stream())
