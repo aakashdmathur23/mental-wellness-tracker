@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: html(content=~{::div.content})}">
+<body>
+<div class="content">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <h1 class="fw-bold text-dark" style="font-size: 3rem;">Welcome Back, <span th:text="${profile != null ? profile.name : 'Student'}"></span>! ☀️</h1>
+            <p class="text-muted fs-5">Tracking your wellness through your <span class="fw-bold text-primary" th:text="${profile != null ? profile.examType : 'Exam'}"></span> journey.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="card bg-success text-white border-0 shadow-lg" style="border-radius: 25px !important;">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold mb-1 opacity-75">Consistency Streak</h5>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <h1 class="display-3 fw-bold mb-0 me-2" th:text="${streak}">0</h1>
+                        <span style="font-size: 3rem;">🔥</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Dashboard Overview (FR-12) -->
+    <div class="row mb-4 g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 glass-card text-center h-100" style="border-radius: 25px;">
+                <div class="card-body p-4 d-flex flex-column justify-content-center align-items-center">
+                    <h5 class="fw-bold text-muted mb-3 text-uppercase" style="font-size: 0.8rem;">Wellness Score</h5>
+                    <div class="position-relative d-inline-block">
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#e6e6e6" stroke-width="12" />
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#764ba2" stroke-width="12" stroke-dasharray="339.292" th:attr="stroke-dashoffset=${339.292 - (339.292 * wellnessScore / 100)}" stroke-linecap="round" transform="rotate(-90 60 60)" />
+                        </svg>
+                        <div class="position-absolute top-50 start-50 translate-middle">
+                            <h2 class="fw-bold mb-0 text-dark" th:text="${wellnessScore}">0</h2>
+                        </div>
+                    </div>
+                    <p class="mt-3 mb-0 text-muted" th:if="${wellnessScore >= 70}">You're doing great! Keep it up. 🌟</p>
+                    <p class="mt-3 mb-0 text-muted" th:if="${wellnessScore >= 40 and wellnessScore < 70}">You're hanging in there. Take a break! ☕</p>
+                    <p class="mt-3 mb-0 text-muted" th:if="${wellnessScore < 40}">Be gentle with yourself today. 🫂</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 glass-card h-100" style="border-radius: 25px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-muted mb-3 text-uppercase" style="font-size: 0.8rem;">Your Top Stress Triggers</h5>
+                    <div th:if="${#lists.isEmpty(topTriggers)}" class="text-center p-4">
+                        <span style="font-size: 2rem;">🌿</span>
+                        <p class="text-muted mt-2">No triggers identified yet. Keep logging your check-ins!</p>
+                    </div>
+                    <div th:if="${not #lists.isEmpty(topTriggers)}" class="d-flex flex-column gap-3 mt-4">
+                        <div th:each="trigger, iterStat : ${topTriggers}">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-dark" th:text="${trigger.key}">Trigger</span>
+                                <span class="badge bg-secondary rounded-pill" th:text="${trigger.value + ' times'}">0 times</span>
+                            </div>
+                            <div class="progress" style="height: 8px; border-radius: 10px;">
+                                <!-- Normalize width assuming max is iterStat.count=0 which is the highest value -->
+                                <div class="progress-bar" role="progressbar" th:style="'width: ' + (${trigger.value} * 100 / ${topTriggers[0].value}) + '%; background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);'" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <a href="/checkin" class="btn btn-primary btn-lg w-100 shadow py-3 fs-4" style="border-radius: 20px;">
+                ✨ Log Today's Mood ✨
+            </a>
+        </div>
+    </div>
+
+    <div class="row" th:if="${not #lists.isEmpty(entries)}">
+        <!-- Dashboard Charts -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-sm border-0 glass-card sticky-top" style="top: 100px; border-radius: 25px;">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4">Mood Trend 📈</h4>
+                    
+                    <div th:if="${entries.size() < 3}" class="text-center p-5 rounded-4" style="background: rgba(255,255,255,0.4);">
+                        <span style="font-size: 3rem;">🌱</span>
+                        <p class="text-muted mt-3 fw-bold">Keep checking in! Your wellness trend will blossom after 3 entries.</p>
+                    </div>
+                    
+                    <div th:if="${entries.size() >= 3}">
+                        <canvas id="moodChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Entries & Suggestions -->
+        <div class="col-md-7">
+            <h3 class="fw-bold mb-4">Your Journey</h3>
+            <div class="card mb-4 shadow-sm border-0 glass-card" th:each="entry : ${entries}" style="border-radius: 25px;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-primary px-3 py-2 fs-6 shadow-sm" th:text="${entry.mood}">MOOD</span>
+                        <small class="text-muted fw-bold" th:text="${#temporals.format(entry.timestamp, 'dd MMM yyyy HH:mm')}"></small>
+                    </div>
+                    
+                    <div th:if="${not #lists.isEmpty(entry.triggers)}" class="mb-3">
+                        <span class="badge bg-secondary me-2 p-2 shadow-sm mb-2" th:each="trigger : ${entry.triggers}" th:text="${trigger.displayValue}"></span>
+                    </div>
+
+                    <div class="bg-white bg-opacity-50 p-3 rounded-4 mb-3 border border-white" th:if="${entry.bothersomeNote != null and !entry.bothersomeNote.isEmpty()}">
+                        <small class="text-muted d-block fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">What was bothering you</small>
+                        <span class="fs-6" th:text="${entry.bothersomeNote}"></span>
+                    </div>
+                    
+                    <div class="bg-white bg-opacity-50 p-3 rounded-4 mb-3 border border-white" th:if="${entry.helpfulNote != null and !entry.helpfulNote.isEmpty()}">
+                        <small class="text-muted d-block fw-bold text-uppercase mb-1" style="font-size: 0.75rem;">What helped you</small>
+                        <span class="fs-6" th:text="${entry.helpfulNote}"></span>
+                    </div>
+
+                    <div class="p-4 rounded-4 text-dark border-start border-4 shadow-sm" style="background: rgba(255,255,255,0.8); border-color: #764ba2 !important;">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="fs-4 me-2">💡</span>
+                            <small class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem;">Wellness Suggestion</small>
+                        </div>
+                        <span class="fs-6 fw-semibold" th:text="${entry.wellnessSuggestion}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row" th:if="${#lists.isEmpty(entries)}">
+        <div class="col-12 text-center p-5 glass-card shadow-sm" style="border-radius: 30px;">
+            <span style="font-size: 5rem;">🧘🏽‍♀️</span>
+            <h2 class="fw-bold mt-3 text-dark">Your wellness journey begins here.</h2>
+            <p class="text-muted fs-5">Take a moment to breathe and reflect on your day.</p>
+        </div>
+    </div>
+
+    <script th:inline="javascript" th:if="${entries != null and entries.size() >= 3}">
+        // Data passed from Spring Controller
+        const rawLabels = /*[[${labels}]]*/ [];
+        const rawMoods = /*[[${moods}]]*/ [];
+        
+        // Reverse arrays so oldest is on the left
+        const labels = [...rawLabels].reverse();
+        const moodStrings = [...rawMoods].reverse();
+
+        // Map moods to a wellness score (1 to 10) for charting
+        const moodScores = {
+            'OVERWHELMED': 1,
+            'SAD': 2,
+            'ANXIOUS': 3,
+            'TIRED': 4,
+            'NEUTRAL': 6,
+            'CALM': 7,
+            'HOPEFUL': 8,
+            'HAPPY': 9,
+            'MOTIVATED': 10
+        };
+
+        const dataPoints = moodStrings.map(m => moodScores[m] || 5);
+
+        const ctx = document.getElementById('moodChart').getContext('2d');
+        
+        // Gradient for the line chart fill
+        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(118, 75, 162, 0.5)');
+        gradient.addColorStop(1, 'rgba(118, 75, 162, 0.0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Wellness Score',
+                    data: dataPoints,
+                    borderColor: '#764ba2',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fda085',
+                    pointBorderColor: '#fff',
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    fill: true,
+                    tension: 0.4 // Smooth curves
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Mood: ' + moodStrings[context.dataIndex];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 10,
+                        display: false // Hide Y axis for a cleaner look
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxTicksLimit: 5, font: {family: 'Outfit', weight: 'bold'} }
+                    }
+                }
+            }
+        });
+    </script>
+</div>
+</body>
+</html>
